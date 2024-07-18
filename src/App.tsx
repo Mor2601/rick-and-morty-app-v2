@@ -1,32 +1,46 @@
-import * as React from 'react';
+import {useEffect,useState} from 'react';
 import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import ProTip from './ProTip';
+import { ApiEndpoints } from './types';
+import { fetchApiEndpoints } from './services/api';
+import { AppBar, Button, Drawer, IconButton, Toolbar, Typography } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
-function Copyright() {
-  return (
-    <Typography
-      variant="body2"
-      align="center"
-      sx={{
-        color: 'text.secondary',
-      }}
-    >
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}.
-    </Typography>
-  );
-}
 
 export default function App() {
+  const [apiEndpoints, setApiEndpoints] = useState<ApiEndpoints | null>(null);
+/**
+ * fetch the app api in the first render
+ */
+useEffect(() => {
+    fetchApiEndpoints()
+      .then((data: ApiEndpoints) => {
+        console.log('API endpoints:', data);
+        setApiEndpoints(data);
+      })
+      .catch((error) => {
+        console.error('Error fetching API endpoints:', error);
+      });
+  }, []);
   return (
-    <Container maxWidth="sm">
-      
+    <Container >
+       <AppBar position="fixed">
+        <Toolbar>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Rick And Morty Characters App
+          </Typography>
+          <Button color="inherit">place holder for select component</Button>
+        </Toolbar>
+      </AppBar>
+    
     </Container>
   );
 }
