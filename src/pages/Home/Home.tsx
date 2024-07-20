@@ -16,6 +16,8 @@ import {
 } from "../../types";
 import CharacterTable from "../../components/CharacterTable/CharacterTable";
 import useFetch from "../../hooks/useFetch";
+import useDebounce from "../../hooks/useDebounce";
+
 interface HomeProps {
   apiEndpoints: ApiEndpoints | null;
 }
@@ -25,47 +27,43 @@ const Home: React.FC<HomeProps> = ({ apiEndpoints }) => {
   const [selectGender, setSelectGender] = useState("");
   const [query, setQuery] = useState("");
   const [page, setPage] = useState<number>(1);
-  const [initialChange, setInitialChange] = useState(false);
+
   const { data, error, loading } = useFetch<Character[]>(
     apiEndpoints?.characters ?? "",
     `${query}`
   );
+  const debouncedSearch = useDebounce(search, 500);
+  const debouncedStatus = useDebounce(selectStatus, 500);
+  const debouncedGender = useDebounce(selectGender, 500);
+  useEffect(() => {
+    let queryBuild = `?`;
+    queryBuild += `page=${page}&`;
+    queryBuild += `name=${debouncedSearch}&`;
+    queryBuild += `status=${selectStatus.toLowerCase()}&`;
+    queryBuild += `gender=${selectGender.toLowerCase()}`;
+    setQuery(queryBuild);
+  }, [page]);
   /**
    * build the query based on the states
    */
   useEffect(() => {
-    /**
-     * if at least one of the state is not build query
-     */
-    if (selectGender || selectStatus || search || page) {
-      //   let queryBuild = `${apiEndpoints?.characters}?`;
-      let queryBuild = `?`;
-      if (page ) {
-        queryBuild += `page=${page}&`;
-      }
-      if (search) {
-        queryBuild += `name=${search}&`;
-      }
-      if (selectStatus) {
-        queryBuild += `status=${selectStatus.toLowerCase()}&`;
-      }
-      if (selectGender) {
-        queryBuild += `gender=${selectGender.toLowerCase()}`;
-      }
+    let queryBuild = `?`;
 
-      setQuery(queryBuild);
-    }
-  }, [selectGender, selectStatus, search, query, page]);
+    queryBuild += `page=1&`;
+    setPage(1);
 
-  /**
-   * if the search or the status or the gender was changed reset the page to 1
-   */
-  useEffect(() => {
-    if (!initialChange && (search || selectStatus || selectGender)) {
-      setPage(1);
-      setInitialChange(true);
+    if (debouncedSearch) {
+      queryBuild += `name=${debouncedSearch}&`;
     }
-  }, [search, selectStatus, selectGender, initialChange]);
+    if (selectStatus) {
+      queryBuild += `status=${selectStatus.toLowerCase()}&`;
+    }
+    if (selectGender) {
+      queryBuild += `gender=${selectGender.toLowerCase()}`;
+    }
+
+    setQuery(queryBuild);
+  }, [selectGender, selectStatus, debouncedSearch]);
 
   const handleClearAll = () => {
     setSearch("");
@@ -73,7 +71,6 @@ const Home: React.FC<HomeProps> = ({ apiEndpoints }) => {
     setSelectGender("");
     setQuery("");
     setPage(1);
-    setInitialChange(false);
     
   };
   const handleGender = (event: SelectChangeEvent) => {
@@ -88,7 +85,10 @@ const Home: React.FC<HomeProps> = ({ apiEndpoints }) => {
     setSearch(event.target.value);
     console.log(event.target.value);
   };
-  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+  const handlePageChange = (
+    event: React.ChangeEvent<unknown>,
+    value: number
+  ) => {
     setPage(value);
   };
   return (
@@ -152,11 +152,7 @@ const Home: React.FC<HomeProps> = ({ apiEndpoints }) => {
           size="large"
         />
       </Grid>
-      <Grid
-        item
-        xs={13}
-
-      >
+      <Grid item xs={13}>
         <CharacterTable characters={data?.results} />
       </Grid>
       <Grid item xs={13}>
