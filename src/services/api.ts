@@ -23,9 +23,9 @@ export const fetchApiEndpoints = async (): Promise<ApiEndpoints> => {
  * @param query -for filter and pagination options 
  * @returns location or character or episode objects
  */
-export const fetchData = async (request: string, query: string): Promise<PaginationResponse<Location | Character | Episode>> => {
+export const fetchData = async (request: string, query: string): Promise<PaginationResponse<Location[] | Character[] | Episode[]>> => {
     try {
-        const response = await fetch(`${request}${query}`);
+        const response = await fetch(`${request}/${query}`);
         if (!response.ok) {
         throw new Error('Network response was not ok');
         }

@@ -62,7 +62,7 @@ export interface PaginationInfo {
 
 export interface PaginationResponse<T> {
     info: PaginationInfo;
-    results: T[];
+    results: T;
   }
   
   
