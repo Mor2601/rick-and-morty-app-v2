@@ -12,7 +12,7 @@ import { Character } from '../../types';
     <Grid container spacing={1}>
         {characters?.map((character,index) => (
              <Grid item lg={12/5}  key={index} >
-                <CardActionArea onClick={(event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+                <CardActionArea onClick={(_event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
                         onClick(character);
                  }}>
           <Card style={{ width: "100vh", height: "170px" }} >

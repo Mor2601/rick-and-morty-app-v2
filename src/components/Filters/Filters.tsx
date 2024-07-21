@@ -30,14 +30,15 @@ const Filters: React.FC<FiltersProps> = ({
   };
   return (
     <Box sx={sx}>
-      <FormControl fullWidth>
-        <InputLabel id={labelId}>{label}</InputLabel>
+      <FormControl fullWidth >
+        <InputLabel id={labelId} sx={{color:label=="View"? "white":"rgb(118, 118, 118)"}}>{label}</InputLabel>
         <Select
           labelId={labelId}
           id={id}
           value={selectedOption}
           label={label}
           onChange={onSelectionChange}
+          sx={{color:label=="View"? "white":"black"}}
         >
           {selectionOptions.map((option) => (
             <MenuItem key={option} value={option}>

@@ -1,9 +1,15 @@
 // src/App.tsx
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import Container from '@mui/material/Container';
-import { ApiEndpoints } from './types';
-import { fetchApiEndpoints } from './services/api';
+import React, { useEffect, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  useLocation,
+} from "react-router-dom";
+import Container from "@mui/material/Container";
+import { ApiEndpoints } from "./types";
+import { fetchApiEndpoints } from "./services/api";
 import {
   AppBar,
   Button,
@@ -17,24 +23,25 @@ import {
   ListItem,
   ListItemButton,
   ListItemIcon,
-  ListItemText
-} from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
-import Home from './pages/Home/Home';
-import Filters from './components/Filters/Filters';
-import { SelectChangeEvent } from '@mui/material/Select';
-import MyDrawer from './components/Drawer/MyDrawer';
-import CssBaseline from '@mui/material/CssBaseline';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import Charts from './pages/Charts/Charts';
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
+  ListItemText,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import Home from "./pages/Home/Home";
+import Filters from "./components/Filters/Filters";
+import { SelectChangeEvent } from "@mui/material/Select";
+import MyDrawer from "./components/Drawer/MyDrawer";
+import CssBaseline from "@mui/material/CssBaseline";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import MailIcon from "@mui/icons-material/Mail";
+import Charts from "./pages/Charts/Charts";
+import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 export default function App() {
   const [apiEndpoints, setApiEndpoints] = useState<ApiEndpoints | null>(null);
-  const [selectedView, setSelectedView] = useState<string>('Table');
+  const [selectedView, setSelectedView] = useState<string>("Table");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
+  const [isChartSelected, setIsChartSelected] = useState(false);
+   
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
@@ -47,20 +54,28 @@ export default function App() {
   useEffect(() => {
     fetchApiEndpoints()
       .then((data: ApiEndpoints) => {
-        console.log('API endpoints:', data);
+        console.log("API endpoints:", data);
         setApiEndpoints(data);
       })
       .catch((error) => {
-        console.error('Error fetching API endpoints:', error);
+        console.error("Error fetching API endpoints:", error);
       });
+     
   }, []);
+  const handleListItemClick = (path: string) => {
+    if (path === "/character-chart") {
+      setIsChartSelected(true);
+    } else {
+      setIsChartSelected(false);
+    }
+  };
 
   return (
     <Router>
       <>
         <AppBar
           position="relative"
-          sx={{ marginBottom: '10px', maxWidth: '100%' }}
+          sx={{ marginBottom: "10px", maxWidth: "100%" }}
         >
           <Toolbar>
             <IconButton
@@ -76,54 +91,81 @@ export default function App() {
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               Rick And Morty Characters App
             </Typography>
-            <Filters
-              selectedOption={selectedView}
-              selectionOptions={['Table', 'Card']}
-              onSelectionChange={handleSelectionChange}
-              label={'View'}
-              sx={{ marginTop: '10px' }}
-              labelId='status-view-label'
-              id='view-select'
-            ></Filters>
+            {!isChartSelected ? (
+              <Filters
+                selectedOption={selectedView}
+                selectionOptions={["Table", "Card"]}
+                onSelectionChange={handleSelectionChange}
+                label={"View"}
+                sx={{ marginTop: "10px" }}
+                labelId="status-view-label"
+                id="view-select"
+              ></Filters>
+            ) : null}
           </Toolbar>
         </AppBar>
-        
-        <Drawer anchor='left' open={isDrawerOpen} onClose={toggleDrawer}>
+
+        <Drawer anchor="left" open={isDrawerOpen} onClose={toggleDrawer}>
           <Box
             sx={{ width: 250 }}
-            role='presentation'
+            role="presentation"
             onClick={toggleDrawer}
             onKeyDown={toggleDrawer}
           >
             <List>
-              <ListItem  component={Link} to='/'>
+              <ListItem
+                component={Link}
+                to="/"
+                onClick={(
+                  event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>
+                ) => {
+                  
+                  handleListItemClick("/");
+                }}
+              >
                 <ListItemIcon>
-                  <HomeOutlinedIcon/>
+                  <HomeOutlinedIcon />
                 </ListItemIcon>
-                <ListItemText primary='Home' />
+                <ListItemText primary="Home" />
               </ListItem>
-              <ListItem  component={Link} to='/character-chart'>
+              <ListItem
+                component={Link}
+                to="/character-chart"
+                onClick={(
+                  event: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>
+                ) => {
+                  handleListItemClick("/character-chart");
+                }}
+              >
                 <ListItemIcon>
-                  <BarChartOutlinedIcon/>
+                  <BarChartOutlinedIcon />
                 </ListItemIcon>
-                <ListItemText primary='Character Chart' />
+                <ListItemText primary="Character Chart" />
               </ListItem>
             </List>
           </Box>
         </Drawer>
-        
+
         <Container
           style={{
-            height: '100vh',
-            display: 'flex',
-            flexDirection: 'column',
-            maxWidth: 'none',
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            maxWidth: "none",
           }}
           fixed={true}
         >
           <Routes>
-            <Route path='/' element={<Home apiEndpoints={apiEndpoints} selectedView={selectedView} />} />
-            <Route path='/character-chart' element={<Charts episodeApi={apiEndpoints?.episodes} />} />
+            <Route
+              path="/"
+              element={
+                <Home apiEndpoints={apiEndpoints} selectedView={selectedView} />
+              }
+            />
+            <Route
+              path="/character-chart"
+              element={<Charts episodeApi={apiEndpoints?.episodes} />}
+            />
           </Routes>
         </Container>
       </>

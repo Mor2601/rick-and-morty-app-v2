@@ -105,6 +105,7 @@ const Home: React.FC<HomeProps> = ({ apiEndpoints, selectedView }) => {
     setOpen(false);
   };
   return (
+    
     <Grid
       container
       rowSpacing={1}

@@ -1,6 +1,6 @@
 import React from 'react'
 import Button from '@mui/material/Button';
-import { Box } from '@mui/material';
+
 interface MyButtonProps {
     name: string;
     onClick: () => void;
