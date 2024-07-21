@@ -27,8 +27,9 @@ import MyDrawer from './components/Drawer/MyDrawer';
 import CssBaseline from '@mui/material/CssBaseline';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-// import Charts from './pages/Charts/Charts';
-
+import Charts from './pages/Charts/Charts';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
+import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
 export default function App() {
   const [apiEndpoints, setApiEndpoints] = useState<ApiEndpoints | null>(null);
   const [selectedView, setSelectedView] = useState<string>('Table');
@@ -95,15 +96,15 @@ export default function App() {
             onKeyDown={toggleDrawer}
           >
             <List>
-              <ListItem button component={Link} to='/'>
+              <ListItem  component={Link} to='/'>
                 <ListItemIcon>
-                  <InboxIcon />
+                  <HomeOutlinedIcon/>
                 </ListItemIcon>
                 <ListItemText primary='Home' />
               </ListItem>
-              <ListItem button component={Link} to='/character-chart'>
+              <ListItem  component={Link} to='/character-chart'>
                 <ListItemIcon>
-                  <MailIcon />
+                  <BarChartOutlinedIcon/>
                 </ListItemIcon>
                 <ListItemText primary='Character Chart' />
               </ListItem>
@@ -122,7 +123,7 @@ export default function App() {
         >
           <Routes>
             <Route path='/' element={<Home apiEndpoints={apiEndpoints} selectedView={selectedView} />} />
-            {/* <Route path='/character-chart' element={<Charts />} /> */}
+            <Route path='/character-chart' element={<Charts episodeApi={apiEndpoints?.episodes} />} />
           </Routes>
         </Container>
       </>

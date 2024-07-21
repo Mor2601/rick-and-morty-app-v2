@@ -1,40 +1,80 @@
-// import React from "react";
-// import { BarChart } from "@mui/x-charts/BarChart";
+import React, { useEffect, useState } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from "recharts";
+import { Episode } from "../../types";
+import useFetch from "../../hooks/useFetch";
 
-// import { DatasetElementType } from "@mui/x-charts/internals";
+const chartSetting = {
+  width: 900,
+  height: 800,
+  colors: ["#538ccb"],
+};
 
-// interface ChartProps{
+const episodesData = [
+  { episode: "S01E01", charactersNumberInEpisode: 20 },
+  { episode: "S01E02", charactersNumberInEpisode: 18 },
+  // Add more episodes as needed
+];
+interface ChartsProp {
+  episodeApi: string | undefined;
+}
+const Charts: React.FC<ChartsProp> = ({ episodeApi }) => {
+  const [requestUrl, setRequestUrl] = useState<string | undefined>(episodeApi);
+  const { data, error, loading } = useFetch<Episode[]>(requestUrl || "");
+  const [episodeData2, setEpisodeData] = useState<
+    Array<{ episode: string; charactersNumberInEpisode: number }>
+  >([]);
+  useEffect(() => {
+    if (data?.results) {
+      const episodes = data.results.map((episode) => ({
+        episode: episode.episode,
+        charactersNumberInEpisode: episode.characters.length,
+      }));
 
-// }
-// const chartSetting = {
-//   xAxis: [
-//     {
-//       label: "Characters Amount",
-//     },
-//   ],
+      setEpisodeData((prevState) => [...prevState, ...episodes]);
+    }
 
-//   colors: ["#538ccb"],
+    if (data?.info?.next) {
+      setRequestUrl(data.info.next);
+    }
+  }, [data]);
 
-//   width: 900,
+  useEffect(() => {
+    setRequestUrl(episodeApi);
+    setEpisodeData([]);
+  }, [episodeApi]);
 
-//   height: 900,
-// };
-// const Charts:React.FC = () => {
-//   return (
-//     <BarChart
-//       dataset={episode}
-//       yAxis={[{ scaleType: "band", dataKey: "episode" }]} // Adjusted to match dataset key
-//       series={[
-//         {
-//           dataKey: "charactersNumberInEpisode",
-//           label: "Characters in episode",
-//         },
-//       ]} // Adjusted to match dataset key
-//       layout="horizontal"
-//       {...chartSetting}
-//       sx={{ marginTop: "90px" }}
-//     />
-//   );
-// };
+  return (
+    <BarChart
+      width={chartSetting.width}
+      height={chartSetting.height}
+      data={episodeData2}
+      layout="vertical" // Set layout to vertical
+      margin={{
+        top: 5,
+        right: 30,
+        left: 20,
+        bottom: 5,
+      }}
+    >
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis type="number" />
+      <YAxis dataKey="episode" type="category" interval={0} />
+      <Tooltip />
+      <Legend />
+      <Bar
+        dataKey="charactersNumberInEpisode"
+        fill={chartSetting.colors[0]}
+      ></Bar>
+    </BarChart>
+  );
+};
 
-// export default Charts;
+export default Charts;
