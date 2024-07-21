@@ -65,4 +65,6 @@ export interface PaginationResponse<T> {
     results: T;
   }
   
-  
+export interface MultipleDataResponse<T> {
+  results: T;
+}

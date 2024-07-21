@@ -1,4 +1,4 @@
-import {Character,ApiEndpoints,Location, Episode, PaginationResponse}  from '../types';
+import {Character,ApiEndpoints,Location, Episode, PaginationResponse,MultipleDataResponse}  from '../types';
 const BASE_URL = 'https://rickandmortyapi.com/api';
 /**
  * return the API endpoints from the base URL
@@ -23,15 +23,30 @@ export const fetchApiEndpoints = async (): Promise<ApiEndpoints> => {
  * @param query -for filter and pagination options 
  * @returns location or character or episode objects
  */
-export const fetchData = async (request: string, query: string): Promise<PaginationResponse<Location[] | Character[] | Episode[]>> => {
+export const fetchData = async (request: string): Promise<PaginationResponse<Location[] | Character[] | Episode[]>> => {
     try {
-        const response = await fetch(`${request}/${query}`);
+        
+        const response = await fetch(`${request}`);
         if (!response.ok) {
         throw new Error('Network response was not ok');
         }
         return response.json();
     } catch (error) {
-        console.error(`Error fetching data from ${request}${query}:`, error);
+        console.error(`Error fetching data from ${request}:`, error);
+        throw error;
+    }
+    };
+
+export const fetchMultipleData = async (request:string):Promise<Location[] | Character[] | Episode[]> => {
+    try {
+        
+        const response = await fetch(`${request}`);
+        if (!response.ok) {
+        throw new Error('Network response was not ok');
+        }
+        return response.json();
+    } catch (error) {
+        console.error(`Error fetching data from ${request}:`, error);
         throw error;
     }
     };

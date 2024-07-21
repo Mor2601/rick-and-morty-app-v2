@@ -10,8 +10,9 @@ import { Character, Location, Episode } from "../../types";
 import Avatar from "@mui/material/Avatar";
 interface CharacterTableProps {
   characters: Character[] | undefined;
+  onClick: (character: Character) => void;
 }
-const CharacterTable: React.FC<CharacterTableProps> = ({ characters }) => {
+const CharacterTable: React.FC<CharacterTableProps> = ({ characters,onClick }) => {
   function createData(
     name: string,
     calories: number,
@@ -50,7 +51,9 @@ const CharacterTable: React.FC<CharacterTableProps> = ({ characters }) => {
               key={row.id}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               hover
-              onClick={() => console.log("row clicked")}
+              onClick={(event: React.MouseEvent<HTMLTableRowElement> | undefined)=>{
+                onClick(row);
+              }}
             >
               <TableCell component="th" scope="row">
                 <Avatar alt={row.name} src={row.image} />

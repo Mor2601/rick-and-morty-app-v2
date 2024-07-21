@@ -1,24 +1,23 @@
 import { useState, useEffect } from 'react';
-import { fetchData } from '../services/api';
-import { PaginationResponse, Location, Character, Episode } from '../types';
+import { fetchMultipleData } from '../services/api';
+import { Location, Character, Episode,MultipleDataResponse } from '../types';
 
-interface UseFetchResult<T> {
-  data: PaginationResponse<T> | null;
+interface UseFetchMultipleResult<T> {
+  data: T | null;
   error: string | null;
   loading: boolean;
 }
 
-const useFetch = <T extends Location[] | Character[] | Episode[]>(request: string): UseFetchResult<T> => {
-  const [data, setData] = useState<PaginationResponse<T> | null>(null);
+const useFetchMultiple = <T extends Location[] | Character[] | Episode[]>(request: string): UseFetchMultipleResult<T> => {
+  const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchDataAsync = async () => {
       try {
-        const result = await fetchData(request);
-        
-        setData(result as PaginationResponse<T>);
+        const result = await fetchMultipleData(request);
+        setData(result as T);
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message);
@@ -36,4 +35,4 @@ const useFetch = <T extends Location[] | Character[] | Episode[]>(request: strin
   return { data, error, loading };
 };
 
-export default useFetch;
+export default useFetchMultiple;

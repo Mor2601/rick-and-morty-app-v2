@@ -14,7 +14,7 @@ interface MyButtonProps {
 const MyButton:React.FC<MyButtonProps> = ({name,onClick,variant,color,size,sx}) => {
   return (
    
-    <Button fullWidth variant={variant} size={size} color={color} onClick={onClick}>
+    <Button fullWidth variant={variant} size={size} color={color} onClick={onClick} >
     {name}
   </Button>
   
