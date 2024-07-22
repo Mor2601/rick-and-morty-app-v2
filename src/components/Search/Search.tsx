@@ -1,5 +1,4 @@
 import TextField from "@mui/material/TextField";
-import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@mui/material/InputAdornment";
 const Search: React.FC = () => {

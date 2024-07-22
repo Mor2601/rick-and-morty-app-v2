@@ -1,24 +1,16 @@
 import { useState, useEffect } from "react";
-import { Container, TextField, Box, Grid, Dialog } from "@mui/material";
+import { TextField, Grid, Dialog, Button, Pagination } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import InputAdornment from "@mui/material/InputAdornment";
 import { SelectChangeEvent } from "@mui/material/Select";
 import Filters from "../../components/Filters/Filters";
-import MyButton from "../../components/Button/MyButton";
-import { fetchData } from "../../services/api";
-import MyPagination from "../../components/Pagination/MyPagination";
+
 import CharacterCard from "../../components/CharacterCard/CharacterCard";
-import {
-  ApiEndpoints,
-  Episode,
-  Location,
-  PaginationInfo,
-  Character,
-} from "../../types";
+import { ApiEndpoints, Character } from "../../types";
 import CharacterTable from "../../components/CharacterTable/CharacterTable";
 import useFetch from "../../hooks/useFetch";
 import useDebounce from "../../hooks/useDebounce";
-import Modal from "../../components/Modal/Modal";
+import Model from "../../components/Modal/Modal";
 
 interface HomeProps {
   apiEndpoints: ApiEndpoints | null;
@@ -33,40 +25,28 @@ const Home: React.FC<HomeProps> = ({ apiEndpoints, selectedView }) => {
   const [page, setPage] = useState<number>(1);
   const [open, setOpen] = useState(false);
 
-  const { data, error, loading } = useFetch<Character[]>(
+  const { data } = useFetch<Character[]>(
     `${apiEndpoints?.characters ?? ""}${query}`
   );
   const debouncedSearch = useDebounce(search, 500);
-  const debouncedStatus = useDebounce(selectStatus, 500);
-  const debouncedGender = useDebounce(selectGender, 500);
+  /**
+   * build query for pagination when the filters dont updated
+   */
+
   useEffect(() => {
-    let queryBuild = `/?`;
-    queryBuild += `page=${page}&`;
-    queryBuild += `name=${debouncedSearch}&`;
-    queryBuild += `status=${selectStatus.toLowerCase()}&`;
-    queryBuild += `gender=${selectGender.toLowerCase()}`;
+    let queryBuild = `/?page=${page}&name=${debouncedSearch}&status=${selectStatus.toLowerCase()}&gender=${selectGender.toLowerCase()}`;
     setQuery(queryBuild);
-    console.log("charatetrs", data?.results);
   }, [page]);
   /**
-   * build the query based on the states
+   * build query for pagination when filters was updated
+   * it reset the page to 1
    */
   useEffect(() => {
-    let queryBuild = `/?`;
+    let queryBuild = `/?${debouncedSearch ? `name=${debouncedSearch}&` : ""}${
+      selectStatus ? `status=${selectStatus.toLowerCase()}&` : ""
+    }${selectGender ? `gender=${selectGender.toLowerCase()}` : ""}`;
 
-    queryBuild += `page=1&`;
     setPage(1);
-
-    if (debouncedSearch) {
-      queryBuild += `name=${debouncedSearch}&`;
-    }
-    if (selectStatus) {
-      queryBuild += `status=${selectStatus.toLowerCase()}&`;
-    }
-    if (selectGender) {
-      queryBuild += `gender=${selectGender.toLowerCase()}`;
-    }
-
     setQuery(queryBuild);
   }, [selectGender, selectStatus, debouncedSearch]);
 
@@ -90,13 +70,12 @@ const Home: React.FC<HomeProps> = ({ apiEndpoints, selectedView }) => {
     console.log(event.target.value);
   };
   const handlePageChange = (
-    event: React.ChangeEvent<unknown>,
+    _event: React.ChangeEvent<unknown>,
     value: number
   ) => {
     setPage(value);
   };
   const handleClickOpen = (selectedCharacter: Character) => {
-    console.log("slelected charater", selectedCharacter);
     setCharacter(selectedCharacter);
 
     setOpen(true);
@@ -105,7 +84,6 @@ const Home: React.FC<HomeProps> = ({ apiEndpoints, selectedView }) => {
     setOpen(false);
   };
   return (
-    
     <Grid
       container
       rowSpacing={1}
@@ -158,13 +136,15 @@ const Home: React.FC<HomeProps> = ({ apiEndpoints, selectedView }) => {
         xs={1}
         sx={{ display: "flex", justifyContent: "center", marginTop: "10px" }}
       >
-        <MyButton
+        <Button
           name="Clear All"
           onClick={handleClearAll}
           variant="contained"
           color="primary"
           size="large"
-        />
+        >
+          Clear All
+        </Button>
       </Grid>
       <Grid item xs={13}>
         {selectedView == "Table" ? (
@@ -174,19 +154,19 @@ const Home: React.FC<HomeProps> = ({ apiEndpoints, selectedView }) => {
           />
         ) : selectedView == "Card" ? (
           <CharacterCard characters={data?.results} onClick={handleClickOpen} />
-        ) : (null)
-      }
+        ) : null}
       </Grid>
       <Grid item xs={13}>
-        <MyPagination
-          pageAmount={data?.info?.pages}
-          currentPage={page}
+        <Pagination
+          count={data?.info?.pages}
+          page={page}
           onChange={handlePageChange}
+          defaultPage={1}
         />
       </Grid>
 
       <Dialog open={open} onClose={handleClose}>
-        <Modal
+        <Model
           sx={{ width: "400px", height: "400px" }}
           character={character}
           episodeApi={apiEndpoints?.episodes}

@@ -7,7 +7,13 @@ interface UseFetchResult<T> {
   error: string | null;
   loading: boolean;
 }
-
+/**
+ * generic custom hook for fetching the data for the location
+ * or characters or epispode it return response that contain the result and 
+ * pagination information
+ * @param request 
+ * @returns 
+ */
 const useFetch = <T extends Location[] | Character[] | Episode[]>(request: string): UseFetchResult<T> => {
   const [data, setData] = useState<PaginationResponse<T> | null>(null);
   const [error, setError] = useState<string | null>(null);

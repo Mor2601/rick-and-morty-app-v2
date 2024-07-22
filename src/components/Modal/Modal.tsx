@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
-import { Button, CardActionArea, Divider } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Divider
+} from "@mui/material";;
 import { Character } from "../../types";
-import useFetch from "../../hooks/useFetch";
 import { Episode } from "../../types";
 import useFetchMultiple from "../../hooks/useFetchMulitpleData";
 interface ModelProps {
@@ -14,23 +15,40 @@ interface ModelProps {
   episodeApi: string | undefined;
   height: string;
 }
-const Modal: React.FC<ModelProps> = ({ sx, character, episodeApi,height }) => {
+const Model: React.FC<ModelProps> = ({ sx, character, episodeApi,height }) => {
   const [firstEpisode, setFirstEpisode] = useState<string | undefined>("");
   const [lastEpisode, setLastEpisode] = useState<string | undefined>("");
   const [query, setQuery] = useState<string>("");
-  const [characterTest, setCharacterTest] = useState<Character | undefined>(
-    character
-  );
-  const { data, error, loading } = useFetchMultiple<Episode[]>(
+
+  const { data} = useFetchMultiple<Episode[]>(
     `${episodeApi ?? ""}${query}`
   );
-
+  /**
+   * exract the episode id from the url for the query for 
+   * fetching the first and last episode
+   * @param episodeUrl 
+   * @returns 
+   */
+ 
   const extractEpisode = (episodeUrl: string) => {
     
-    const episodeId = episodeUrl.split("/").pop() ?? "";
+    
+    try {
+      const episodeId = episodeUrl.split("/").pop() ?? "";
+      if (episodeId) {
+        return parseInt(episodeId);
+      }else{
+        return undefined;
+      }
+    } catch (error) {
+      console.error("error in extractEpisode", error);
+    }
 
-    return parseInt(episodeId);
+
   };
+  /**
+   * fetch the first and last episode of the character
+   */
   useEffect(() => {
     if (character) {
       const firstEpisodeId = character.episode[0]
@@ -48,7 +66,11 @@ const Modal: React.FC<ModelProps> = ({ sx, character, episodeApi,height }) => {
       }
     }
   }, [character]);
-
+  /**
+   * set the first and last episode of the character
+   * if the charater appears only in one episode 
+   * the first episode will be the last episode.
+   */
   useEffect(() => {
     if (data) {
       if (data?.length === 2) {
@@ -94,4 +116,4 @@ const Modal: React.FC<ModelProps> = ({ sx, character, episodeApi,height }) => {
   );
 };
 
-export default Modal;
+export default Model;

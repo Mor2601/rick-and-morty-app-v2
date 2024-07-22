@@ -19,7 +19,7 @@ const CharacterTable: React.FC<CharacterTableProps> = ({
   onClick,
 }) => {
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} sx={{overflow:"auto", maxHeight:"60vh"}}>
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>

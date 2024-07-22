@@ -23,11 +23,7 @@ const Filters: React.FC<FiltersProps> = ({
   labelId,
   id,
 }) => {
-  const [age, setAge] = React.useState("");
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value as string);
-  };
   return (
     <Box sx={sx}>
       <FormControl fullWidth >
