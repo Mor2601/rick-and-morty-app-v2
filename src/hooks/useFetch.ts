@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { fetchData } from '../services/api';
 import { PaginationResponse, Location, Character, Episode } from '../types';
-
+import { isValidUrl } from '../types/typeGuards';
 interface UseFetchResult<T> {
   data: PaginationResponse<T> | null;
   error: string | null;
@@ -12,7 +12,7 @@ interface UseFetchResult<T> {
  * or characters or epispode it return response that contain the result and 
  * pagination information
  * @param request 
- * @returns 
+ * @returns {Location[] | Character[] | Episode[]} - Array of location, character, or episode objects.
  */
 const useFetch = <T extends Location[] | Character[] | Episode[]>(request: string): UseFetchResult<T> => {
   const [data, setData] = useState<PaginationResponse<T> | null>(null);
@@ -20,6 +20,7 @@ const useFetch = <T extends Location[] | Character[] | Episode[]>(request: strin
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    if(isValidUrl(request)){
     const fetchDataAsync = async () => {
       try {
         const result = await fetchData(request);
@@ -35,8 +36,10 @@ const useFetch = <T extends Location[] | Character[] | Episode[]>(request: strin
         setLoading(false);
       }
     };
+  
 
     fetchDataAsync();
+  }
   }, [request]);
 
   return { data, error, loading };

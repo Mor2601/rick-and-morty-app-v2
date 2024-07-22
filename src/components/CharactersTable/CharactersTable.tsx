@@ -10,17 +10,35 @@ import {
   Avatar
 } from "@mui/material";
 import { Character } from "../../types";
-interface CharacterTableProps {
+
+interface CharactersTableProps {
   characters: Character[] | undefined;
   onClick: (character: Character) => void;
 }
-const CharacterTable: React.FC<CharacterTableProps> = ({
+
+const CharactersTable: React.FC<CharactersTableProps> = ({
   characters,
   onClick,
 }) => {
   return (
-    <TableContainer component={Paper} sx={{overflow:"auto", maxHeight:"60vh"}}>
-      <Table aria-label="simple table">
+    <TableContainer
+      component={Paper}
+      sx={{
+        overflow: "auto",
+        maxHeight: {
+          xs: "50vh", // max height for extra-small screens
+          sm: "60vh", // max height for small screens
+          md: "70vh", // max height for medium screens
+          lg: "80vh", // max height for large screens
+          xl: "90vh"  // max height for extra-large screens
+        },
+        height: "100%",
+        width: "100%",
+        boxSizing: "border-box"
+      }}
+      elevation={12}
+    >
+      <Table aria-label="simple table" stickyHeader>
         <TableHead>
           <TableRow>
             <TableCell></TableCell>
@@ -58,4 +76,4 @@ const CharacterTable: React.FC<CharacterTableProps> = ({
   );
 };
 
-export default CharacterTable;
+export default CharactersTable;

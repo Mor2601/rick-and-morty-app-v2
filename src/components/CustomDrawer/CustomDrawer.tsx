@@ -25,7 +25,7 @@ const CustomDrawer: React.FC<CustomDrawerProps> = ({
             </ListItemIcon>
             <ListItemText primary="Home" />
           </ListItem>
-          <ListItem component={Link} to="/character-chart">
+          <ListItem component={Link} to="/characters-chart">
             <ListItemIcon>
               <BarChartOutlinedIcon />
             </ListItemIcon>

@@ -1,21 +1,28 @@
 import { useState, useEffect } from "react";
-import { TextField, Grid, Dialog, Button, Pagination } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import InputAdornment from "@mui/material/InputAdornment";
+import {
+  Grid,
+  Dialog,
+  Button,
+  Pagination,
+  Box,
+  
+} from "@mui/material";
+import NoResult from "../../components/NoResult/NoResult";
 import { SelectChangeEvent } from "@mui/material/Select";
 import Filters from "../../components/Filters/Filters";
-
-import CharacterCard from "../../components/CharacterCard/CharacterCard";
+import CharactersCards from "../../components/CharactersCards/CharactersCards";
 import { ApiEndpoints, Character } from "../../types";
-import CharacterTable from "../../components/CharacterTable/CharacterTable";
+import CharactersTable from "../../components/CharactersTable/CharactersTable";
 import useFetch from "../../hooks/useFetch";
 import useDebounce from "../../hooks/useDebounce";
-import Model from "../../components/Modal/Modal";
+import Model from "../../components/Model/Model";
+import Search from "../../components/Search/Search";
 
 interface HomeProps {
   apiEndpoints: ApiEndpoints | null;
   selectedView: string;
 }
+
 const Home: React.FC<HomeProps> = ({ apiEndpoints, selectedView }) => {
   const [search, setSearch] = useState("");
   const [selectStatus, setSelectStatus] = useState("");
@@ -29,23 +36,16 @@ const Home: React.FC<HomeProps> = ({ apiEndpoints, selectedView }) => {
     `${apiEndpoints?.characters ?? ""}${query}`
   );
   const debouncedSearch = useDebounce(search, 500);
-  /**
-   * build query for pagination when the filters dont updated
-   */
 
   useEffect(() => {
     let queryBuild = `/?page=${page}&name=${debouncedSearch}&status=${selectStatus.toLowerCase()}&gender=${selectGender.toLowerCase()}`;
     setQuery(queryBuild);
   }, [page]);
-  /**
-   * build query for pagination when filters was updated
-   * it reset the page to 1
-   */
+
   useEffect(() => {
     let queryBuild = `/?${debouncedSearch ? `name=${debouncedSearch}&` : ""}${
       selectStatus ? `status=${selectStatus.toLowerCase()}&` : ""
     }${selectGender ? `gender=${selectGender.toLowerCase()}` : ""}`;
-
     setPage(1);
     setQuery(queryBuild);
   }, [selectGender, selectStatus, debouncedSearch]);
@@ -57,112 +57,107 @@ const Home: React.FC<HomeProps> = ({ apiEndpoints, selectedView }) => {
     setQuery("");
     setPage(1);
   };
+
   const handleGender = (event: SelectChangeEvent) => {
     setSelectGender(event.target.value);
-    console.log(event.target.value);
   };
+
   const handleStatus = (event: SelectChangeEvent) => {
     setSelectStatus(event.target.value);
-    console.log(event.target.value);
   };
+
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
-    console.log(event.target.value);
   };
+
   const handlePageChange = (
     _event: React.ChangeEvent<unknown>,
     value: number
   ) => {
     setPage(value);
   };
+
   const handleClickOpen = (selectedCharacter: Character) => {
     setCharacter(selectedCharacter);
-
     setOpen(true);
   };
+
   const handleClose = () => {
     setOpen(false);
   };
+
+  const characters = data?.results ?? [];
+  const hasResults = characters.length > 0;
+
   return (
-    <Grid
-      container
-      rowSpacing={1}
-      columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-      columns={13}
-    >
-      <Grid item xs={13}>
-        <TextField
-          id="outlined-basic"
-          label="Search"
-          variant="outlined"
-          fullWidth
-          value={search}
-          onChange={handleSearch}
-          slotProps={{
-            input: {
-              endAdornment: (
-                <InputAdornment position="end">
-                  <SearchIcon />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
-      </Grid>
-      <Grid item xs={6}>
-        <Filters
-          selectedOption={selectGender}
-          selectionOptions={["Female", "Male", "Genderless", "unknown"]}
-          onSelectionChange={handleGender}
-          label={"Gender"}
-          sx={{ marginTop: "10px" }}
-          labelId="gender-select-label"
-          id="gneder-select"
-        ></Filters>
-      </Grid>
-      <Grid item xs={6}>
-        <Filters
-          selectedOption={selectStatus}
-          selectionOptions={["Alive", "Dead", "unknown"]}
-          onSelectionChange={handleStatus}
-          label={"Status"}
-          sx={{ marginTop: "10px" }}
-          labelId="status-select-label"
-          id="status-select"
-        ></Filters>
-      </Grid>
+    <Box sx={{ height: "100vh", overflow: "hidden", padding: "16px" }}>
       <Grid
-        item
-        xs={1}
-        sx={{ display: "flex", justifyContent: "center", marginTop: "10px" }}
+        container
+        rowSpacing={2}
+        columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+        columns={13}
       >
-        <Button
-          name="Clear All"
-          onClick={handleClearAll}
-          variant="contained"
-          color="primary"
-          size="large"
-        >
-          Clear All
-        </Button>
-      </Grid>
-      <Grid item xs={13}>
-        {selectedView == "Table" ? (
-          <CharacterTable
-            characters={data?.results}
-            onClick={handleClickOpen}
+        <Grid item xs={13}>
+          <Search search={search} handleSearch={handleSearch} />
+        </Grid>
+        <Grid item xs={6}>
+          <Filters
+            selectedOption={selectGender}
+            selectionOptions={["Female", "Male", "Genderless", "unknown"]}
+            onSelectionChange={handleGender}
+            label={"Gender"}
+            sx={{ marginTop: "10px" }}
+            labelId="gender-select-label"
+            id="gender-select"
           />
-        ) : selectedView == "Card" ? (
-          <CharacterCard characters={data?.results} onClick={handleClickOpen} />
-        ) : null}
-      </Grid>
-      <Grid item xs={13}>
-        <Pagination
-          count={data?.info?.pages}
-          page={page}
-          onChange={handlePageChange}
-          defaultPage={1}
-        />
+        </Grid>
+        <Grid item xs={6}>
+          <Filters
+            selectedOption={selectStatus}
+            selectionOptions={["Alive", "Dead", "unknown"]}
+            onSelectionChange={handleStatus}
+            label={"Status"}
+            sx={{ marginTop: "10px" }}
+            labelId="status-select-label"
+            id="status-select"
+          />
+        </Grid>
+        <Grid
+          item
+          xs={1}
+          sx={{ display: "flex", justifyContent: "center", marginTop: "10px" }}
+        >
+          <Button
+            name="Clear All"
+            onClick={handleClearAll}
+            variant="contained"
+            color="primary"
+            size="small"
+          >
+            Clear All
+          </Button>
+        </Grid>
+        <Grid
+          item
+          xs={13}
+          sx={{ overflow: "auto", maxHeight: "calc(100vh - 300px)" }}
+        >
+          {!hasResults ? (
+            <NoResult     />
+          ) : selectedView === "Table" ? (
+            <CharactersTable characters={characters} onClick={handleClickOpen} />
+          ) : selectedView === "Cards" ? (
+            <CharactersCards characters={characters} onClick={handleClickOpen} />
+          ) : null}
+        </Grid>
+        <Grid item xs={13}>
+          <Pagination
+            count={data?.info?.pages}
+            page={page}
+            onChange={handlePageChange}
+            defaultPage={1}
+          />
+        </Grid>
       </Grid>
 
       <Dialog open={open} onClose={handleClose}>
@@ -173,8 +168,12 @@ const Home: React.FC<HomeProps> = ({ apiEndpoints, selectedView }) => {
           height="280"
         />
       </Dialog>
-    </Grid>
+    </Box>
   );
 };
 
 export default Home;
+
+    
+
+  

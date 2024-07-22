@@ -4,12 +4,21 @@ import {
   Location,
   Episode,
   PaginationResponse,
-  MultipleDataResponse,
+
 } from "../types";
+import {
+  isCharacter,
+  isLocation,
+  isEpisode,
+  isPaginationResponse,
+ 
+} from "../types/typeGuards";
+
 const BASE_URL = "https://rickandmortyapi.com/api";
+
 /**
- * return the API endpoints from the base URL
- * @returns ApiEndpoints
+ * Fetch the API endpoints from the base URL.
+ * @returns ApiEndpoints - The available API endpoints for characters, locations, and episodes.
  */
 export const fetchApiEndpoints = async (): Promise<ApiEndpoints> => {
   try {
@@ -17,49 +26,91 @@ export const fetchApiEndpoints = async (): Promise<ApiEndpoints> => {
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
-    return response.json();
+    const data = await response.json();
+    // Optional: You can add a type guard check here if needed
+    return data;
   } catch (error) {
     console.error("Error fetching API endpoints:", error);
     throw error;
   }
 };
+
 /**
- * generic function to fetch data from the API it will return a PaginationResponse that contains
- * the info for pagination and the results. the results can be Location or Character or Episode ojects for each of them
- * @param request -location character or episode url
- * @param query -for filter and pagination options
- * @returns location or character or episode objects
+ * Fetch data from the API.
+ * This function returns a PaginationResponse that contains information for pagination
+ * and results which can be Location, Character, or Episode objects.
+ * @param request - The URL for the location, character, or episode endpoint.
+ * @returns PaginationResponse<Location[] | Character[] | Episode[]> - Contains pagination info and results.
  */
 export const fetchData = async (
   request: string
 ): Promise<PaginationResponse<Location[] | Character[] | Episode[]>> => {
   try {
-    const response = await fetch(`${request}`);
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
+    const response = await fetch(request);
+    // If the status is 404, return empty results and info
+    if (response.status === 404) {
+      return {
+        results: [],
+        info: {
+          count: 0,
+          pages: 0,
+          next: null,
+          prev: null,
+        },
+      };
     }
-    return response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        `Network response was not ok - Status: ${response.status}`
+      );
+    }
+
+    const data = await response.json();
+
+    // Type guard check
+    if (
+      isPaginationResponse(data, isCharacter) ||
+      isPaginationResponse(data, isLocation) ||
+      isPaginationResponse(data, isEpisode)
+    ) {
+      return data;
+    } else {
+      throw new Error("Invalid data format");
+    }
   } catch (error) {
     console.error(`Error fetching data from ${request}:`, error);
     throw error;
   }
 };
+
 /**
- * generic function to fetch data from the API it will return a Charaters or Locations or Episodes
- * for get queries that fetch mutiple object from the data based on the query
- * @param request -location character or episode url
- * @param query -for filter and pagination options
- * @returns location or character or episode objects
+ * Fetch multiple data items from the API.
+ * This function returns an array of Location, Character, or Episode objects.
+ * @param request - The URL for the location, character, or episode endpoint.
+ * @returns Location[] | Character[] | Episode[] - Array of location, character, or episode objects.
  */
 export const fetchMultipleData = async (
   request: string
 ): Promise<Location[] | Character[] | Episode[]> => {
   try {
-    const response = await fetch(`${request}`);
+    const response = await fetch(request);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
-    return response.json();
+    const data = await response.json();
+
+    // Type guard check
+    if (
+      Array.isArray(data) &&
+      (data.every(isLocation) ||
+        (data as Character[]).every(isCharacter) ||
+        (data as Episode[]).every(isEpisode))
+    ) {
+      return data;
+    } else {
+      throw new Error("Invalid data format");
+    }
   } catch (error) {
     console.error(`Error fetching data from ${request}:`, error);
     throw error;
@@ -67,36 +118,32 @@ export const fetchMultipleData = async (
 };
 
 /**
- * fetch all chcaraters or locations or episodes from the API
- * @param request -location character or episode url
- * @returns location or character or episode objects
+ * Fetch all characters, locations, or episodes from the API.
+ * This function handles pagination and collects all items.
+ * @param url - The URL for the location, character, or episode endpoint.
+ * @returns T[] - Array of location, character, or episode objects.
  */
-
 export const fetchAllData = async <T>(url?: string): Promise<T[]> => {
-    try {
-        const result = await fetch(url ?? "");
-        console.log("result", result);
-        if (!result.ok) {
-            throw new Error("Network response was not ok");
-        }
-        let response = await result.json();
-        let data: T[] = [];
-        while (response.info.next) {
-            data.push(...response.results);
-            const result = await fetch(response.info.next);
-            if (!result.ok) {
-                throw new Error("Network response was not ok");
-            }
-            response = await result.json();
-        }
-        data.push(...response.results);
-        return data;
-    } catch (error) {
-        console.error(`Error fetching data from `, error);
-        throw error;
+  try {
+    const result = await fetch(url ?? "");
+    console.log("result", result);
+    if (!result.ok) {
+      throw new Error("Network response was not ok");
     }
+    let response = await result.json();
+    let data: T[] = [];
+    while (response.info.next) {
+      data.push(...response.results);
+      const result = await fetch(response.info.next);
+      if (!result.ok) {
+        throw new Error("Network response was not ok");
+      }
+      response = await result.json();
+    }
+    data.push(...response.results);
+    return data;
+  } catch (error) {
+    console.error("Error fetching data from", error);
+    throw error;
+  }
 };
-//TODO:check for type gurad
-
-
-  

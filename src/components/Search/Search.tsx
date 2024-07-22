@@ -1,10 +1,20 @@
-import TextField from "@mui/material/TextField";
+import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import InputAdornment from "@mui/material/InputAdornment";
-const Search: React.FC = () => {
+
+interface SearchProps {
+  search: string;
+  handleSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const Search: React.FC<SearchProps> = ({ search, handleSearch }) => {
   return (
-    <div>
-      <TextField id="outlined-basic" label="Search" variant="outlined" 
+    <TextField
+      id="outlined-basic"
+      label="Search"
+      variant="outlined"
+      fullWidth
+      value={search}
+      onChange={handleSearch}
       slotProps={{
         input: {
           endAdornment: (
@@ -14,9 +24,7 @@ const Search: React.FC = () => {
           ),
         },
       }}
-      />
-
-    </div>
+    />
   );
 };
 export default Search;

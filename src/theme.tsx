@@ -1,4 +1,4 @@
-import { createTheme } from "@mui/material";
+import { createTheme, CssBaseline } from "@mui/material";
 import { red } from "@mui/material/colors";
 
 // A custom theme for this app
@@ -14,23 +14,25 @@ const theme = createTheme({
       main: red.A400,
     },
   },
-  // components: {
-  //   // Apply global styles to CssBaseline
-  //   MuiCssBaseline: {
-  //     styleOverrides: `
-  //       html, body {
-  //         margin: 0;
-  //         padding: 0;
-  //         height: 100%;
-  //         overflow: hidden; /* Prevent scrolling on the body */
-  //       }
-  //       #root {
-  //         height: 100%; /* Ensure root element takes full height */
-  //       }
-  //     `,
-  //   },
-  //   // You can also apply styles to other MUI components here
-  // },
+  components: {
+    // Apply global styles here
+    MuiCssBaseline: {
+      styleOverrides: `
+        html, body {
+          height: 100%;
+          margin: 0;
+          overflow: hidden;
+          box-sizing: border-box;
+        }
+        #root {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+      `,
+    },
+  },
 });
 
 export default theme;

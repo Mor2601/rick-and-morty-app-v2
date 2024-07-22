@@ -1,3 +1,7 @@
+/**
+ * This file contains all the types that are used in the application.
+ * it was taken based on rick and morty api documentation
+ */
 export interface Character {
   id: number;
   name: string;
@@ -65,6 +69,4 @@ export interface PaginationResponse<T> {
     results: T;
   }
   
-export interface MultipleDataResponse<T> {
-  results: T;
-}
+

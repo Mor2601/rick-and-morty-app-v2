@@ -27,7 +27,7 @@ const Model: React.FC<ModelProps> = ({ sx, character, episodeApi,height }) => {
    * exract the episode id from the url for the query for 
    * fetching the first and last episode
    * @param episodeUrl 
-   * @returns 
+   * @returns  episode id
    */
  
   const extractEpisode = (episodeUrl: string) => {

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Route, Routes, Link, useLocation } from "react-router-dom";
-import Container from "@mui/material/Container";
 import { ApiEndpoints } from "./types";
 import { fetchApiEndpoints } from "./services/api";
 import CustomDrawer from "./components/CustomDrawer/CustomDrawer";
@@ -18,6 +17,9 @@ export default function App() {
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
+  /**
+   * save the current page location
+   */
   useEffect(() => {
     setCurrentLocation(location.pathname);
   }, [location]);
@@ -29,24 +31,23 @@ export default function App() {
   useEffect(() => {
     fetchApiEndpoints()
       .then((data: ApiEndpoints) => {
-        console.log("API endpoints:", data);
         setApiEndpoints(data);
       })
       .catch((error) => {
         console.error("Error fetching API endpoints:", error);
       });
-
   }, []);
-
+  /**
+   * if the current page is character-chart set the view selction is hidden in the app bar
+   */
   useEffect(() => {
-    if(currentLocation === "/character-chart"){
+    if (currentLocation === "/characters-chart") {
       setIsChartSelected(true);
-    }else{
+    } else {
       setIsChartSelected(false);
     }
   }, [currentLocation]);
 
-  
   return (
     <>
       <CustomAppBar
@@ -55,36 +56,25 @@ export default function App() {
         selectedView={selectedView}
         handleSelectionChange={handleSelectionChange}
       />
-      
+
       <CustomDrawer
         isDrawerOpen={isDrawerOpen}
         toggleDrawer={toggleDrawer}
         Link={Link}
-        
       />
 
-      <Container
-        style={{
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          maxWidth: "none",
-        }}
-       
-      >
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Home apiEndpoints={apiEndpoints} selectedView={selectedView} />
-            }
-          />
-          <Route
-            path="/character-chart"
-            element={<Charts episodeApi={apiEndpoints?.episodes} />}
-          />
-        </Routes>
-      </Container>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Home apiEndpoints={apiEndpoints} selectedView={selectedView} />
+          }
+        />
+        <Route
+          path="/characters-chart"
+          element={<Charts episodeApi={apiEndpoints?.episodes} />}
+        />
+      </Routes>
     </>
   );
 }

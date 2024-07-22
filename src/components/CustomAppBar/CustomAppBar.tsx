@@ -29,7 +29,7 @@ const CustomAppBar: React.FC<CustomAppBarProps> = ({
       }}>
           Rick And Morty Characters App
         </Typography>
-        {!isChartSelected ? <Filters selectedOption={selectedView} selectionOptions={["Table", "Card"]} onSelectionChange={handleSelectionChange} label={"View"} sx={{
+        {!isChartSelected ? <Filters selectedOption={selectedView} selectionOptions={["Table", "Cards"]} onSelectionChange={handleSelectionChange} label={"View"} sx={{
         marginTop: "10px"
       }} labelId="status-view-label" id="view-select"></Filters> : null}
       </Toolbar>
