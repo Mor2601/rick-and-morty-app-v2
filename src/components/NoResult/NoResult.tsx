@@ -9,9 +9,7 @@ export const NoResult: React.FC = () => {
         justifyContent: "center",
         alignItems: "center",
         height: "53vh",
-
         width: "100%",
-
         boxSizing: "border-box",
         padding: 2,
         textAlign: "center",
