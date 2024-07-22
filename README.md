@@ -1,39 +1,50 @@
-# Material UI - Vite.js in TypeScript example
+# Rick and Morty Character Explorer
 
-## How to use
+This project is a web application built with React, TypeScript, and Vite. It allows users to explore characters from the "Rick and Morty" series using the [Rick and Morty API](https://rickandmortyapi.com/).
 
-Download the example [or clone the repo](https://github.com/mui/material-ui):
+## Features
 
-<!-- #default-branch-switch -->
+- **Character Exploration**: Browse through characters from the "Rick and Morty" series in a paginated table view or through interactive cards.
+- **Detailed Character Information**: Click on a character to view detailed information including episodes they appear in.
+- **Episode Chart**: Visualize the number of characters appearing in each episode through an interactive chart.
+- **Responsive Design**: Enjoy a seamless experience on both desktop and mobile devices thanks to a responsive design.
+- **Search and Filter**: Quickly find characters by name or filter them based on various criteria such as species and status.
 
-```bash
-curl https://codeload.github.com/mui/material-ui/tar.gz/next | tar -xz --strip=2 material-ui-next/examples/material-ui-vite-ts
-cd material-ui-vite-ts
+## Technologies
+
+- **React**: For building the user interface.
+- **TypeScript**: For adding static type definitions to JavaScript.
+- **Vite**: For fast development and build tooling.
+- **Material UI**: For styled components and icons.
+
+## Getting Started
+
+To run this project locally, follow these steps:
+
+1. Clone the repository:
+
+   ```sh
+   git clone https://github.com/Mor2601/rick-and-morty-app-v2.git
+   ```
+
+2. Install dependencies:
+
+   ```sh
+   npm install
+   ```
+
+3. Start the development server:
+
+   ```sh
+   npm run dev
+   ```
+
+   The application will be available at [http://localhost:5173](http://localhost:5173).
+
+## Building for Production
+
+To create a production build, run:
+
+```sh
+npm run build
 ```
-
-Install it and run:
-
-```bash
-npm install
-npm run dev
-```
-
-or:
-
-<!-- #default-branch-switch -->
-
-[![Edit on StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/mui/material-ui/tree/next/examples/material-ui-vite-ts)
-
-[![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/github/mui/material-ui/tree/next/examples/material-ui-vite-ts)
-
-## The idea behind the example
-
-This example uses [Vite.js](https://github.com/vitejs/vite).
-It includes `@mui/material` and its peer dependencies, including [Emotion](https://emotion.sh/docs/introduction), the default style engine in Material UI v5.
-
-## What's next?
-
-<!-- #default-branch-switch -->
-
-You now have a working example project.
-You can head back to the documentation and continue by browsing the [templates](https://next.mui.com/material-ui/getting-started/templates/) section.
